@@ -23,6 +23,7 @@ def route_request(state: AirlineState):
     query = state["user_query"]
     user_id = state['user_id']
     logger.info(f"user_id={user_id} intent={intent} query={query}")
+    logger.debug(f"DEBUG LOG: user_id={user_id} intent={intent}")
 
     if intent == "flight":
         response = flight_agent(query,user_id)

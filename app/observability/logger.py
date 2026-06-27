@@ -1,8 +1,11 @@
 import logging
+from app.core.config import settings
 
 logging.basicConfig(
-  level= logging.INFO,
-  format= "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+  level= getattr(logging, settings.log_level.upper()),
+  format= "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+  force= True
 )
 
-logger = logging.getLogger("airline-ops-assistant")
+logger = logging.getLogger(settings.app_name)
+logger.setLevel(getattr(logging, settings.log_level.upper()))
