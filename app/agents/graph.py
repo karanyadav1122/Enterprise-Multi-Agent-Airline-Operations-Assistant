@@ -2,6 +2,7 @@ from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from app.agents.flight_agent import flight_agent
 from app.agents.policy_agent import policy_agent
+from app.agents.intent_classifier import classify_user_intent
 
 
 from app.agents.weather_agent import weather_agent
@@ -12,24 +13,9 @@ class AirlineState(TypedDict):
   response: str
   user_id: str
   
-def classify_intent(state: AirlineState) :
-    query = state['user_query'].lower()
-    
-    if 'flight' in query or 'aa' in query or 'status' in query or 'delayed' in query or 'gate' in query or "departure" in query or 'arrival in query':
-      intent = "flight"
-      
-    elif 'baggage' in query or 'policy' in query or 'rebook' in query or 'connection' in query:
-      intent = "policy"
-      
-   
-      
-    elif "weather" in query :
-      intent = "weather"
-      
-    else:
-      intent = "general"
-      
-    return {"intent": intent} 
+def classify_intent(state: AirlineState):
+  intent = classify_user_intent(state['user_query'])
+  return {"intent": intent}
   
 def route_request(state: AirlineState):
     intent = state["intent"]
