@@ -15,5 +15,5 @@ class ChatResponse(BaseModel):
   
 @router.post("", response_model = ChatResponse)
 def chat(request: ChatRequest):
-  result = run_airline_agent(request.message)
+  result = run_airline_agent(request.message, request.user_id)
   return ChatResponse(response = result)    

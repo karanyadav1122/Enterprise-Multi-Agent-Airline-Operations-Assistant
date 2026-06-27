@@ -2,7 +2,7 @@ from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from app.agents.flight_agent import flight_agent
 from app.agents.policy_agent import policy_agent
-from app.tools.flight_tool import get_flight_status
+
 
 from app.agents.weather_agent import weather_agent
 
@@ -10,11 +10,12 @@ class AirlineState(TypedDict):
   user_query: str
   intent: str
   response: str
+  user_id: str
   
 def classify_intent(state: AirlineState) :
     query = state['user_query'].lower()
     
-    if 'flight' in query or 'aa' in query or 'status' in query or 'delayed' in query:
+    if 'flight' in query or 'aa' in query or 'status' in query or 'delayed' in query or 'gate' in query or "departure" in query or 'arrival in query':
       intent = "flight"
       
     elif 'baggage' in query or 'policy' in query or 'rebook' in query or 'connection' in query:
@@ -31,30 +32,25 @@ def classify_intent(state: AirlineState) :
     return {"intent": intent} 
   
 def route_request(state: AirlineState):
-    intent = state['intent']
-    query = state['user_query']
-    
+    intent = state["intent"]
+    query = state["user_query"]
+    user_id = state['user_id']
+
     if intent == "flight":
-      flight_data = get_flight_status("AA123")
-      
-      response = (
-            f"Flight AA123 status: {flight_data['status']}. "
-            f"Gate: {flight_data.get('gate', 'N/A')}. "
-            f"Departure: {flight_data.get('departure', 'N/A')}. "
-            f"Arrival: {flight_data.get('arrival', 'N/A')}."
-        )
-    
-    elif intent ==  "weather":
-      response =  weather_agent(state['user_query'])
-      
+        response = flight_agent(query,user_id)
+
+    elif intent == "weather":
+        response = weather_agent(query)
+
     elif intent == "policy":
-      response = policy_agent(state['user_query'])
-      
+        response = policy_agent(query)
+
     else:
-      response = (
-                  "I can help with flight status, baggae policy, rebooking,"
-                  "and weather related airlne operations")
-      
+        response = (
+            "I can help with flight status, baggage policy, "
+            "rebooking, and weather related airline operations."
+        )
+
     return {"response": response}
   
   
@@ -66,13 +62,14 @@ workflow.set_entry_point("classify_intent")
 
 workflow.add_edge("classify_intent", "route_request")
 workflow.add_edge("route_request", END)
-
+ 
 
 graph = workflow.compile()
 
-def run_airline_agent(user_query: str) -> str:
+def run_airline_agent(user_query: str, user_id: str) -> str:
   result = graph.invoke({
     "user_query": user_query,
+    "user_id": user_id,
     "intent": "",
     "response": ""
   }) 
