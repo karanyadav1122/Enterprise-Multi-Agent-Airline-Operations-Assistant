@@ -3,6 +3,7 @@ from langgraph.graph import StateGraph, END
 from app.agents.flight_agent import flight_agent
 from app.agents.policy_agent import policy_agent
 from app.agents.intent_classifier import classify_user_intent
+from app.observability.logger import logger
 
 
 from app.agents.weather_agent import weather_agent
@@ -21,6 +22,7 @@ def route_request(state: AirlineState):
     intent = state["intent"]
     query = state["user_query"]
     user_id = state['user_id']
+    logger.info(f"user_id={user_id} intent={intent} query={query}")
 
     if intent == "flight":
         response = flight_agent(query,user_id)
