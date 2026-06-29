@@ -19,4 +19,4 @@ def test_flight_agent_missing_flight_number():
     request_id= "test_request"
   )
   
-  assert "Please provide a  valid flight number" in response
+  assert "Please provide a valid flight number" in response
