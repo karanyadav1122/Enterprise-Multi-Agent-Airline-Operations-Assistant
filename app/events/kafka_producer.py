@@ -1,7 +1,7 @@
 import json
 import logging
 from datetime import datetime, timezone
-
+from app.observability.metrics import KAFKA_EVENTS_PUBLISHED
 from kafka import KafkaProducer
 
 logger = logging.getLogger(__name__)
@@ -33,6 +33,10 @@ def publish_chat_event(
     try:
         producer.send(CHAT_EVENTS_TOPIC, event)
         producer.flush()
+        KAFKA_EVENTS_PUBLISHED.labels(
+        topic=CHAT_EVENTS_TOPIC
+            ).inc()
+
 
         logger.info(
             "request_id=%s user_id=%s topic=%s event=kafka_publish_success",

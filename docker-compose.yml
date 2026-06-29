@@ -38,3 +38,21 @@ services:
     depends_on:
       - redis
       - kafka
+
+  prometheus:
+    image: prom/prometheus
+    container_name: airline-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana
+    container_name: airline-grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus    

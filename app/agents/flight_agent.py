@@ -1,6 +1,6 @@
 import re
 import logging
-
+from app.observability.metrics import CACHE_HITS, CACHE_MISSES
 from app.tools.flight_tool import get_flight_status
 from app.cache.redis_client import save_last_flight, get_last_flight, redis_client
 
@@ -35,6 +35,8 @@ def flight_agent(query: str, user_id: str = "default", request_id: str = "") -> 
     cached_response = redis_client.get(cache_key)
 
     if cached_response:
+        CACHE_HITS.labels(agent= "flight").inc()
+        
         logger.info(
             "request_id=%s user_id=%s flight=%s request_type=%s cache=HIT",
             request_id,
@@ -44,6 +46,8 @@ def flight_agent(query: str, user_id: str = "default", request_id: str = "") -> 
         )
         return cached_response
 
+    CACHE_MISSES.labels(agent="flight").inc()
+    
     logger.info(
         "request_id=%s user_id=%s flight=%s request_type=%s cache=MISS",
         request_id,
