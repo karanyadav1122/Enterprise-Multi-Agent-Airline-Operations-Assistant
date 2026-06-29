@@ -16,5 +16,5 @@ def test_flight_agent_requires_flight_for_new_user():
   
   response = flight_agent("what gate?","new_test_user")
   
-  assert "Please provide a valid flight number" in response   
+  assert "Please provide a valid flight number" in response  
   
